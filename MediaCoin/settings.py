@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-d3e6eek5h9jh8x6ogah591)%k@5p9dr%of7l7s_sqjynagrjdo
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'media-coin.herokuapp.com',
+    'media-coin-test.herokuapp.com',
     '127.0.0.1'
 ]
 
