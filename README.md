@@ -1,0 +1,2 @@
+# MediaCoin
+ Media team

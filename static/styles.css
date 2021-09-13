@@ -1,0 +1,65 @@
+html{
+    background-color: #d6e8f7;
+    display: flex;
+    justify-content: center;
+}
+.bar--positive {
+    fill: steelblue;
+}
+
+.bar--negative {
+    fill: darkorange;
+}
+
+.axis text {
+    font: 10px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+#title{
+    text-align: center;
+    animation: colorCycle 3s infinite;
+}
+
+#chart{
+    width: 95vw;
+    display: flex;
+    justify-content: center;
+}
+#rotate {
+    animation: rotation 2s infinite linear;
+}
+@keyframes colorCycle {
+    0%{
+        color:#4682b4;
+    }
+    50%{
+        color: #ff8c00;
+    }
+    100%{
+        color: #4682b4;
+    }
+}
+
+
+@keyframes rotation {
+    from {
+            transform: rotate(0deg);
+    }
+    to {
+            transform: rotate(359deg);
+    }
+}
+
+#ver{
+    position: fixed;
+    bottom: 0px;
+    right: 5px;
+    font-family: sans-serif;
+    font-style: italic;
+    font-size: 10px;
+}
