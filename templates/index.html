@@ -6,90 +6,106 @@
     <link rel="shortcut icon" type="image/png" href="{% static 'icon.ico' %}" />
     <script src="{% static 'd3.v3.min.js' %}"></script>
     <title>Media Coin Base</title>
+    <style>
+        .toolTip {
+            position: absolute;
+            display: none;
+            min-width: 80px;
+            height: auto;
+            background: none repeat scroll 0 0 #ffffff;
+            border: 3px solid #6F257F;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 
 <body>
-    <p id="ver">MediaCoinBase version 1.1</p>
-    <h1 id="title">MEDIA COIN BASE <img width="50" height="50" id="rotate" src="{% static 'dollar.png' %}"></h1>
-    <div id="chart"></div>
-    <audio controls autoplay style="display:none">
-	<source src="{% static 'music.mp3' %}" type="audio/ogg">
-        
-    </audio>
+    <p id="ver">MediaCoinBase version 1.2</p>
+    <h1 id="title"><img width="50" height="50" id="rotate" src="{% static 'logo.png' %}">MEDIA COIN BASE</h1>
+    
+
     <script>
-    var margin = {top: 20, right: 30, bottom: 40, left: 30},
-        width = 960 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-
-    var x = d3.scale.linear()
-        .range([0, width]);
-
-    var y = d3.scale.ordinal()
-        .rangeRoundBands([0, height], 0.1);
-
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
-
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left")
-        .tickSize(0)
-        .tickPadding(6);
-
-    var svg = d3.select("#chart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    d3.csv("{% url 'data' %}", function(data) {
+        var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+        var margin = {top: 20, right: 50, bottom: 50, left: 50},
+            width = window.innerWidth - margin.left - margin.right - 300,
+            height = window.innerHeight - margin.top - margin.bottom - 150;
+        
+        var x = d3.scale.linear()
+            .range([0, width]);
+        
+        var y = d3.scale.ordinal()
+            .rangeRoundBands([0, height], 0.1);
+        
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+        
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickSize(0)
+            .tickPadding(6);
+        
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        
+        d3.csv("{% url 'data' %}", type, function(error, data) {
         x.domain(d3.extent(data, function(d) { return d.value; })).nice();
         y.domain(data.map(function(d) { return d.name; }));
-
+        
         svg.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .attr("class", function(d) { return "bar bar--" + (d.value < 0 ? "negative" : "positive"); })
-            .attr("x", function(d) { return x(Math.min(0, d.value)); })
+            .attr("x", function(d) { return x(0); })
             .attr("y", function(d) { return y(d.name); })
-            .attr("height", y.rangeBand())
-
+            .attr("height", y.rangeBand());
+        
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
-
+        
         svg.append("g")
             .attr("class", "y axis")
             .attr("transform", "translate(" + x(0) + ",0)")
             .call(yAxis);
 
         svg.selectAll(".bar")
-                .transition()
-                .duration(500)
-                .attr("width", function(d) { return Math.abs(x(d.value) - x(0)); })
-                .delay(function(d,i){return(i*200)})
-        
-        svg.selectAll('.bar')
-            .on('mouseover', function(d) {
+            .on("mousemove", function(d){
+                tooltip
+                    .style("left", d3.event.pageX - 50 + "px")
+                    .style("top", d3.event.pageY - 70 + "px")
+                    .style("display", "inline-block")
+                    .html((d.name) + "<br>" + (d.value) + " Coin");
                 d3.select(this)
-                    .attr("stroke", "black")
-                    .attr("stroke-width", "2")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", "2")
             })
-            .on('mouseout', function(){
+            .on("mouseout", function(){ 
                 d3.select(this).attr("stroke", "none")
-            })
+                tooltip.style("display", "none");});
+                    
+        svg.selectAll(".bar")
+                .transition()
+                .duration(600)
+                .attr("x", function(d) { return x(Math.min(0, d.value)); })
+                .attr("width", function(d) { return Math.abs(x(d.value) - x(0)); })
+                .delay(function(d,i){return(i*300)})
+            
+        });
         
-
-    });
-
-    function type(d) {
-    d.value = +d.value;
-    return d;
-    }
-
+        function type(d) {
+        d.value = +d.value;
+        return d;
+        }
+    
     </script>
+
 
 </body>
